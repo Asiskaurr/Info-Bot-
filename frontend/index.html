@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#102a56">
+    <title>InfoBot | GTBIT CSE</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <main class="chat-shell" aria-labelledby="page-title">
+      <header class="chat-header">
+        <div class="brand-mark" aria-hidden="true">IB</div>
+        <div>
+          <h1 id="page-title">InfoBot</h1>
+          <p>GTBIT · Computer Science &amp; Engineering</p>
+        </div>
+      </header>
+
+      <section class="conversation" id="conversation" aria-label="Conversation" aria-live="polite">
+        <article class="message assistant-message">
+          <span class="message-label">InfoBot</span>
+          <p>Hello! Ask me a question about the CSE department at GTBIT.</p>
+        </article>
+      </section>
+
+      <form class="composer" id="chat-form">
+        <label class="visually-hidden" for="question-input">Your question</label>
+        <input
+          id="question-input"
+          name="question"
+          type="text"
+          placeholder="Type your question..."
+          autocomplete="off"
+          required
+        >
+        <button type="submit">Send</button>
+      </form>
+      <p class="prototype-note">Prototype interface · replies are temporary examples</p>
+    </main>
+  </body>
+</html>
