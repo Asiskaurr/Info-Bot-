@@ -97,7 +97,8 @@ When a user submits a question, the system retrieves relevant information and us
 | ChromaDB | Vector database and similarity search |
 | BeautifulSoup | Website scraping |
 | Requests | HTTP requests and document downloading |
-| PyMuPDF | PDF text extraction and page rendering for optional OCR |
+| pdfplumber | PDF text extraction |
+| PyMuPDF | Page rendering for optional scanned-PDF OCR |
 | Google GenAI SDK | Gemini answer generation and optional scanned-page OCR |
 
 ## 📂 Project Structure
