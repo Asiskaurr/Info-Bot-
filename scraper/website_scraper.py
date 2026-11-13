@@ -17,6 +17,12 @@ OUTPUT_FILE = os.path.join(OUTPUT_DIR, "gtbit_website_data.json")
 
 MAX_PAGES = int(os.getenv("GTBIT_MAX_PAGES", "300"))
 REQUEST_DELAY = 1
+NON_HTML_EXTENSIONS = {
+    ".css", ".doc", ".docx", ".gif", ".ico", ".jpeg", ".jpg",
+    ".js", ".json", ".mp3", ".mp4", ".png", ".ppt", ".pptx",
+    ".rar", ".rtf", ".svg", ".txt", ".webp", ".xls", ".xlsx",
+    ".xml", ".zip",
+}
 
 HEADERS = {
     "User-Agent": (
@@ -178,8 +184,8 @@ def crawl_website():
 
                 absolute_url = urljoin(
                     url,
-                    link["href"]
-                )
+                    link["href"].strip()
+                ).strip()
 
                 parsed = urlparse(absolute_url)
 
@@ -196,6 +202,12 @@ def crawl_website():
                             "link_text": link["text"]
                         }
 
+                    continue
+
+                # Do not queue assets or office documents as pages. The current
+                # ingestion pipeline indexes HTML and PDFs, not these formats.
+                extension = os.path.splitext(parsed.path.lower())[1]
+                if extension in NON_HTML_EXTENSIONS:
                     continue
 
                 # Add internal website pages to the queue

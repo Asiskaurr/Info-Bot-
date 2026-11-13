@@ -74,6 +74,16 @@ body {
 }
 
 .message p { margin: 3px 0 0; }
+.answer-content { margin-top: 3px; }
+.answer-content p { margin: 0 0 9px; }
+.answer-content p:last-child { margin-bottom: 0; }
+.answer-content h3, .answer-content h4 { margin: 12px 0 5px; color: #173b70; line-height: 1.35; }
+.answer-content h3 { font-size: 16px; }
+.answer-content h4 { font-size: 14px; }
+.answer-content ul, .answer-content ol { margin: 5px 0 10px; padding-left: 22px; }
+.answer-content li + li { margin-top: 4px; }
+.answer-content code { padding: 1px 4px; border-radius: 4px; color: #173b70; background: #e3eaf4; font-size: .92em; }
+.answer-content strong { color: #173b70; }
 .message-label { font-size: 11px; font-weight: 750; letter-spacing: .04em; }
 .assistant-message { color: #243552; background: #f0f4fa; border-top-left-radius: 5px; }
 .loading-message { color: #64728a; font-style: italic; }
@@ -85,7 +95,15 @@ body {
 .message-sources li + li { margin-top: 7px; }
 .message-sources a { color: #1d4f91; font-size: 13px; font-weight: 650; }
 .message-sources a:focus-visible { outline: 2px solid #1d4f91; outline-offset: 2px; }
-.source-snippet { color: #64728a; font-size: 12px; }
+.source-snippet {
+  max-width: 100%;
+  margin: 3px 0 0;
+  overflow: hidden;
+  color: #64728a;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 .composer {
   display: flex;

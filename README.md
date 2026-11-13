@@ -198,7 +198,7 @@ python -m rag.build_chunks
 python -m rag.vector_store
 ```
 
-The crawler is limited to 300 pages by default. Set `GTBIT_MAX_PAGES=0` in `.env` to remove that cap. It follows same-site links and extracts static HTML; this still cannot guarantee capture of content that requires browser JavaScript or lives outside the GTBIT host.
+The crawler is limited to 300 pages by default. Set `GTBIT_MAX_PAGES=0` in `.env` to remove that cap. It follows same-site links, extracts static HTML, and collects PDF links. The current pipeline does not extract Word, Excel, PowerPoint, or other non-PDF files; it also cannot guarantee capture of content that requires browser JavaScript or lives outside the GTBIT host.
 
 Retrieval returns up to five cosine-nearest chunks and drops results above `MAX_RETRIEVAL_DISTANCE` (default `0.65`). Treat this as an initial smoke-build setting: review it against representative answerable and unanswerable questions before relying on it for a larger knowledge base.
 
@@ -228,7 +228,7 @@ In a second terminal, from the repository root, serve the page over HTTP:
 python -m http.server 5500 --directory frontend
 ```
 
-Open `http://127.0.0.1:5500`. In `frontend/app.js`, set `USE_MOCK_API` to `false` to send questions to `http://127.0.0.1:5000/api/chat`. The default CORS allowlist includes this local origin; configure `FRONTEND_ORIGINS` for other origins. Directly opening `index.html` is suitable for mock mode; use the local server for API mode.
+Open `http://127.0.0.1:5500`. The frontend sends questions to the `API_URL` in `frontend/app.js`, which defaults to `http://127.0.0.1:5000/api/chat`. The default CORS allowlist includes this local origin; configure `FRONTEND_ORIGINS` for other origins. Serve the page over HTTP for API mode.
 
 ## 🔌 API Documentation
 

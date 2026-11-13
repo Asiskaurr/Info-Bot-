@@ -3,9 +3,7 @@ const input = document.querySelector("#question-input");
 const sendButton = form.querySelector('button[type="submit"]');
 const conversation = document.querySelector("#conversation");
 
-// Keep true while the backend is still being built. Set false to use the API.
-const USE_MOCK_API = true;
-// Update this if the backend runs on a different host or port.
+// The backend runs locally on this address by default (see app.py).
 const API_URL = "http://127.0.0.1:5000/api/chat";
 
 form.addEventListener("submit", async (event) => {
@@ -44,8 +42,6 @@ form.addEventListener("submit", async (event) => {
 
 // Uses the agreed contract: { question } -> { answer, sources }.
 async function getReply(question) {
-  if (USE_MOCK_API) return getMockReply(question);
-
   const response = await fetch(API_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -79,19 +75,6 @@ async function getReply(question) {
   };
 }
 
-async function getMockReply(question) {
-  return {
-    answer: `This is a sample response to: “${question}”. The connected InfoBot service will provide an answer from GTBIT sources.`,
-    sources: [
-      {
-        title: "Example source — GTBIT website",
-        url: "https://www.gtbit.ac.in/",
-        snippet: "Demo citation only; this page was not retrieved for your question.",
-      },
-    ],
-  };
-}
-
 function addMessage(label, content, className) {
   const article = document.createElement("article");
   article.className = `message ${className}`;
@@ -100,10 +83,15 @@ function addMessage(label, content, className) {
   heading.className = "message-label";
   heading.textContent = label;
 
-  const paragraph = document.createElement("p");
-  paragraph.textContent = typeof content === "string" ? content : content.answer;
+  const body = document.createElement(typeof content === "string" ? "p" : "div");
+  if (typeof content === "string") {
+    body.textContent = content;
+  } else {
+    body.className = "answer-content";
+    renderMarkdown(content.answer, body);
+  }
 
-  article.append(heading, paragraph);
+  article.append(heading, body);
 
   if (typeof content !== "string" && Array.isArray(content.sources) && content.sources.length) {
     const sourceSection = document.createElement("div");
@@ -130,7 +118,9 @@ function addMessage(label, content, className) {
         const snippet = document.createElement("p");
         snippet.className = "source-snippet";
         const page = source.page_number ? `Page ${source.page_number}. ` : "";
-        snippet.textContent = `${page}${source.snippet || ""}`;
+        const fullDescription = `${page}${source.snippet || ""}`.replace(/\s+/g, " ").trim();
+        snippet.textContent = fullDescription;
+        snippet.title = fullDescription;
         item.append(snippet);
       }
       sourceList.append(item);
@@ -142,6 +132,82 @@ function addMessage(label, content, className) {
   conversation.append(article);
   conversation.scrollTop = conversation.scrollHeight;
   return article;
+}
+
+function renderMarkdown(markdown, container) {
+  const lines = String(markdown || "").replace(/\r\n?/g, "\n").split("\n");
+  let paragraphLines = [];
+  let listElement = null;
+
+  const flushParagraph = () => {
+    if (!paragraphLines.length) return;
+    const paragraph = document.createElement("p");
+    appendInlineMarkdown(paragraphLines.join(" ").trim(), paragraph);
+    container.append(paragraph);
+    paragraphLines = [];
+  };
+
+  const flushList = () => {
+    listElement = null;
+  };
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line) {
+      flushParagraph();
+      flushList();
+      continue;
+    }
+
+    const headingMatch = line.match(/^(#{1,4})\s+(.+)$/);
+    if (headingMatch) {
+      flushParagraph();
+      flushList();
+      const heading = document.createElement(headingMatch[1].length <= 2 ? "h3" : "h4");
+      appendInlineMarkdown(headingMatch[2], heading);
+      container.append(heading);
+      continue;
+    }
+
+    const bulletMatch = line.match(/^[-*+]\s+(.+)$/);
+    const numberMatch = line.match(/^\d+[.)]\s+(.+)$/);
+    if (bulletMatch || numberMatch) {
+      flushParagraph();
+      const tagName = bulletMatch ? "ul" : "ol";
+      if (!listElement || listElement.tagName.toLowerCase() !== tagName) {
+        flushList();
+        listElement = document.createElement(tagName);
+        container.append(listElement);
+      }
+      const item = document.createElement("li");
+      appendInlineMarkdown((bulletMatch || numberMatch)[1], item);
+      listElement.append(item);
+      continue;
+    }
+
+    flushList();
+    paragraphLines.push(line);
+  }
+
+  flushParagraph();
+}
+
+function appendInlineMarkdown(text, parent) {
+  const tokenPattern = /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g;
+  let lastIndex = 0;
+
+  for (const match of text.matchAll(tokenPattern)) {
+    parent.append(document.createTextNode(text.slice(lastIndex, match.index)));
+    const token = match[0];
+    const isBold = token.startsWith("**");
+    const isCode = token.startsWith("`");
+    const element = document.createElement(isBold ? "strong" : isCode ? "code" : "em");
+    element.textContent = token.slice(isBold || isCode ? (isBold ? 2 : 1) : 1, isBold ? -2 : -1);
+    parent.append(element);
+    lastIndex = match.index + token.length;
+  }
+
+  parent.append(document.createTextNode(text.slice(lastIndex)));
 }
 
 function getSafeSourceUrl(value) {

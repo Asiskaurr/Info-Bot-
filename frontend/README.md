@@ -1,21 +1,14 @@
 # InfoBot Frontend
 
-Minimal browser-based chat interface for the InfoBot prototype. It currently uses a mock reply; no backend is required to view the page.
+Minimal browser-based chat interface for the InfoBot prototype. It sends questions to the local Flask API and displays the answer with any retrieved sources.
 
 ## Open the prototype
 
-For mock mode, open `index.html` in a browser. Type a question and select **Send** to see the mock answer and example source. The example source is a placeholder and was not retrieved in response to the question.
+Start the Flask backend from the repository root with `python app.py`. In another terminal, serve the frontend with `python -m http.server 5500 --directory frontend`, then open `http://127.0.0.1:5500`. The backend's default CORS allowlist includes this origin.
 
-For API mode, serve the page from the repository root with `python -m http.server 5500 --directory frontend`, then open `http://127.0.0.1:5500`. The backend's default CORS allowlist includes this origin.
+## Configure the API address
 
-## Configure mock or API mode
-
-In `app.js`, set `USE_MOCK_API` near the top:
-
-- `true` keeps using the built-in mock response (current default).
-- `false` sends a request to the URL in `API_URL`.
-
-Update `API_URL` to the backend's local address when it is available. The current placeholder is `http://127.0.0.1:5000/api/chat`.
+The frontend sends requests to `API_URL` near the top of `app.js`, which defaults to `http://127.0.0.1:5000/api/chat`. Change it if the backend uses a different host or port.
 
 When using a separate frontend and backend server, the backend must allow requests from the frontend's local origin (CORS), or serve the frontend from the same origin. Opening the page directly from disk works for mock mode.
 
