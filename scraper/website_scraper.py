@@ -82,7 +82,8 @@ def extract_page_data(soup, url):
         "style",
         "noscript",
         "nav",
-        "footer"
+        "footer",
+        "marquee",
     ]):
         element.decompose()
 

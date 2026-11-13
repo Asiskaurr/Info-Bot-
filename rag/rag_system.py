@@ -11,8 +11,9 @@ load_dotenv()
 
 DB_PATH = os.getenv("CHROMA_DB_PATH", "data/chroma_db")
 COLLECTION_NAME = os.getenv("CHROMA_COLLECTION", "gtbit_knowledge")
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
 TOP_K = int(os.getenv("RETRIEVAL_TOP_K", "5"))
+MAX_RETRIEVAL_DISTANCE = float(os.getenv("MAX_RETRIEVAL_DISTANCE", "0.65"))
 MAX_RETRIES = int(os.getenv("GEMINI_MAX_RETRIES", "3"))
 
 class BackendNotReady(RuntimeError):
@@ -119,12 +120,15 @@ def retrieve_documents(question, top_k=TOP_K):
 
     retrieved = []
     for index, text in enumerate(documents[0]):
+        distance = distances[0][index] if index < len(distances[0]) else None
+        if distance is not None and distance > MAX_RETRIEVAL_DISTANCE:
+            continue
+
         retrieved.append({
             "text": text or "",
             "metadata": (metadatas[0][index] or {})
             if index < len(metadatas[0]) else {},
-            "distance": distances[0][index]
-            if index < len(distances[0]) else None,
+            "distance": distance,
         })
 
     return retrieved

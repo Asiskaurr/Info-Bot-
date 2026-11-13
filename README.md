@@ -177,7 +177,7 @@ pip install -r requirements.txt
 
 ### 4. Configure Environment Variables
 
-Copy `.env.example` to `.env` in the project root, then set your Gemini API key. The configured default is `gemini-3.8-flash`; `GEMINI_MODEL` can be changed to another model available to your API key. The file also contains the local ChromaDB path, local CORS origins and optional OCR setting.
+Copy `.env.example` to `.env` in the project root, then set your Gemini API key. The configured default is `gemini-3.5-flash-lite`; `GEMINI_MODEL` can be changed to another model available to your API key. The file also contains the local ChromaDB path, local CORS origins and optional OCR setting.
 
 ```env
 GEMINI_API_KEY=your_gemini_api_key
@@ -199,6 +199,8 @@ python -m rag.vector_store
 ```
 
 The crawler is limited to 300 pages by default. Set `GTBIT_MAX_PAGES=0` in `.env` to remove that cap. It follows same-site links and extracts static HTML; this still cannot guarantee capture of content that requires browser JavaScript or lives outside the GTBIT host.
+
+Retrieval returns up to five cosine-nearest chunks and drops results above `MAX_RETRIEVAL_DISTANCE` (default `0.65`). Treat this as an initial smoke-build setting: review it against representative answerable and unanswerable questions before relying on it for a larger knowledge base.
 
 Scanned PDF pages are detected during extraction. OCR is opt-in because it sends page images to Gemini and may consume API quota: set `ENABLE_SCANNED_PDF_OCR=true` in `.env` before running `python -m scraper.batch_pdf_processor`. Then continue with dataset preparation, chunking and indexing.
 
