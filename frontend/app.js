@@ -30,7 +30,9 @@ form.addEventListener("submit", async (event) => {
     console.error("InfoBot request failed:", error);
     addMessage(
       "InfoBot",
-      "I couldn’t connect to the InfoBot service. Please try again when the backend is available.",
+      error.name === "TypeError"
+        ? "I couldn’t connect to the InfoBot service. Please check that the backend is running and try again."
+        : error.message,
       "assistant-message",
     );
   } finally {
@@ -50,11 +52,23 @@ async function getReply(question) {
     body: JSON.stringify({ question }),
   });
 
-  if (!response.ok) {
-    throw new Error(`Chat API returned HTTP ${response.status}`);
+  let data;
+  try {
+    data = await response.json();
+  } catch {
+    throw new Error("InfoBot returned an unreadable response. Please try again.");
   }
 
-  const data = await response.json();
+  if (!data || typeof data !== "object") {
+    throw new Error("InfoBot returned an invalid response. Please try again.");
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      data.error?.message || `InfoBot request failed (HTTP ${response.status}).`,
+    );
+  }
+
   if (typeof data.answer !== "string") {
     throw new Error("Chat API response is missing a string answer");
   }
@@ -105,15 +119,18 @@ function addMessage(label, content, className) {
       const item = document.createElement("li");
       const link = document.createElement("a");
       link.href = getSafeSourceUrl(source.url);
-      link.textContent = source.title || source.url;
+      link.textContent = source.source_number
+        ? `Source ${source.source_number}: ${source.title || source.url}`
+        : source.title || source.url;
       link.target = "_blank";
       link.rel = "noopener noreferrer";
       item.append(link);
 
-      if (source.snippet) {
+      if (source.snippet || source.page_number) {
         const snippet = document.createElement("p");
         snippet.className = "source-snippet";
-        snippet.textContent = source.snippet;
+        const page = source.page_number ? `Page ${source.page_number}. ` : "";
+        snippet.textContent = `${page}${source.snippet || ""}`;
         item.append(snippet);
       }
       sourceList.append(item);
