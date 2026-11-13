@@ -2,9 +2,13 @@
 
 Minimal browser-based chat interface for the InfoBot prototype. It sends questions to the local Flask API and displays the answer with any retrieved sources.
 
+The microphone button uses the browser's built-in Web Speech API to transcribe a question into the message box. The user reviews the transcript and selects **Send**; the frontend sends only the recognized text to the existing API. No separate transcription API key or paid software is configured. Speech recognition support depends on the browser, so typing remains available as a fallback.
+
 ## Open the prototype
 
 Start the Flask backend from the repository root with `python app.py`. In another terminal, serve the frontend with `python -m http.server 5500 --directory frontend`, then open `http://127.0.0.1:5500`. The backend's default CORS allowlist includes this origin.
+
+To view the GTBIT-style demo page with the chatbot launcher, open `http://127.0.0.1:5500/demo.html`. The launcher opens the existing chatbot page in an iframe; the chat implementation remains in `index.html`.
 
 ## Configure the API address
 

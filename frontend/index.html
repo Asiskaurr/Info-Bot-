@@ -4,17 +4,29 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#102a56">
-    <title>InfoBot | GTBIT CSE</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>InfoBot | Guru Tegh Bahadur Institute of Technology</title>
+    <link rel="stylesheet" href="styles.css?branding=20261114">
     <script src="app.js" defer></script>
   </head>
   <body>
     <main class="chat-shell" aria-labelledby="page-title">
       <header class="chat-header">
-        <div class="brand-mark" aria-hidden="true">IB</div>
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64" focusable="false">
+            <path class="bot-antenna" d="M32 8v8"></path>
+            <circle class="bot-antenna-tip" cx="32" cy="6" r="3"></circle>
+            <rect class="bot-head" x="12" y="17" width="40" height="34" rx="12"></rect>
+            <path class="bot-ear" d="M12 29H7v12h5m40-12h5v12h-5"></path>
+            <rect class="bot-face" x="18" y="23" width="28" height="22" rx="8"></rect>
+            <circle class="bot-eye" cx="26" cy="33" r="2.5"></circle>
+            <circle class="bot-eye" cx="38" cy="33" r="2.5"></circle>
+            <path class="bot-smile" d="M27 39c3 3 7 3 10 0"></path>
+            <path class="bot-neck" d="M27 52v4m10-4v4M22 57h20"></path>
+          </svg>
+        </div>
         <div>
           <h1 id="page-title">InfoBot</h1>
-          <p>GTBIT · Computer Science &amp; Engineering</p>
+          <p>Guru Tegh Bahadur Institute of Technology</p>
         </div>
       </header>
 
@@ -26,18 +38,38 @@
       </section>
 
       <form class="composer" id="chat-form">
-        <label class="visually-hidden" for="question-input">Your question</label>
-        <input
-          id="question-input"
-          name="question"
-          type="text"
-          placeholder="Type your question..."
-          autocomplete="off"
-          required
-        >
-        <button type="submit">Send</button>
+        <div class="composer-row">
+          <label class="visually-hidden" for="question-input">Your question</label>
+          <input
+            id="question-input"
+            name="question"
+            type="text"
+            placeholder="Type your question..."
+            autocomplete="off"
+            required
+          >
+          <button
+            id="voice-input-button"
+            class="voice-input-button"
+            type="button"
+            aria-label="Use voice input"
+            aria-pressed="false"
+            title="Speak your question"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"></path>
+              <path d="M19 11a7 7 0 0 1-14 0M12 18v4m-4 0h8"></path>
+            </svg>
+          </button>
+          <button class="send-button" type="submit" aria-label="Send message" title="Send message">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M2.6 21.1 21.9 12 2.6 2.9 2.5 10l13 2-13 2 .1 7.1Z"></path>
+            </svg>
+            <span class="visually-hidden">Send</span>
+          </button>
+        </div>
+        <p id="voice-status" class="voice-status" role="status" aria-live="polite"></p>
       </form>
-      <p class="prototype-note">Prototype interface · answers use retrieved GTBIT sources</p>
     </main>
   </body>
 </html>

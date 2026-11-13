@@ -2,9 +2,76 @@ const form = document.querySelector("#chat-form");
 const input = document.querySelector("#question-input");
 const sendButton = form.querySelector('button[type="submit"]');
 const conversation = document.querySelector("#conversation");
+const voiceButton = document.querySelector("#voice-input-button");
+const voiceStatus = document.querySelector("#voice-status");
 
 // The backend runs locally on this address by default (see app.py).
 const API_URL = "http://127.0.0.1:5000/api/chat";
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let speechRecognition = null;
+let isListening = false;
+let receivedTranscript = false;
+let speechErrorOccurred = false;
+
+if (SpeechRecognition) {
+  speechRecognition = new SpeechRecognition();
+  speechRecognition.lang = "en-IN";
+  speechRecognition.continuous = false;
+  speechRecognition.interimResults = false;
+
+  voiceButton.addEventListener("click", () => {
+    if (isListening) {
+      speechRecognition.stop();
+      return;
+    }
+
+    receivedTranscript = false;
+    speechErrorOccurred = false;
+    setListeningState(true);
+    voiceStatus.textContent = "Listening… speak your question.";
+    try {
+      speechRecognition.start();
+    } catch {
+      setListeningState(false);
+      voiceStatus.textContent = "Voice input could not start. Please try again.";
+    }
+  });
+
+  speechRecognition.addEventListener("start", () => {
+    setListeningState(true);
+    voiceStatus.textContent = "Listening… speak your question.";
+  });
+
+  speechRecognition.addEventListener("result", (event) => {
+    const transcript = Array.from(event.results)
+      .map((result) => result[0]?.transcript || "")
+      .join(" ")
+      .trim();
+
+    if (!transcript) return;
+
+    input.value = transcript;
+    input.focus();
+    receivedTranscript = true;
+    voiceStatus.textContent = "Transcript added. Review it, then select Send.";
+  });
+
+  speechRecognition.addEventListener("error", (event) => {
+    speechErrorOccurred = true;
+    voiceStatus.textContent = getSpeechErrorMessage(event.error);
+  });
+
+  speechRecognition.addEventListener("end", () => {
+    setListeningState(false);
+    if (!receivedTranscript && !speechErrorOccurred) {
+      voiceStatus.textContent = "No speech was recognized. Tap the microphone to try again.";
+    }
+  });
+} else {
+  voiceButton.disabled = true;
+  voiceButton.title = "Voice input is not supported in this browser";
+  voiceStatus.textContent = "Voice input is unavailable in this browser. You can still type your question.";
+}
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -13,10 +80,13 @@ form.addEventListener("submit", async (event) => {
   const question = input.value.trim();
   if (!question) return;
 
+  if (isListening) speechRecognition.stop();
+
   addMessage("You", question, "user-message");
   input.value = "";
   input.disabled = true;
   sendButton.disabled = true;
+  voiceButton.disabled = true;
   const thinkingMessage = addMessage("InfoBot", "InfoBot is thinking…", "assistant-message loading-message");
 
   try {
@@ -36,9 +106,29 @@ form.addEventListener("submit", async (event) => {
   } finally {
     input.disabled = false;
     sendButton.disabled = false;
+    voiceButton.disabled = !SpeechRecognition;
     input.focus();
   }
 });
+
+function setListeningState(listening) {
+  isListening = listening;
+  voiceButton.classList.toggle("is-listening", listening);
+  voiceButton.setAttribute("aria-pressed", String(listening));
+  voiceButton.setAttribute("aria-label", listening ? "Stop voice input" : "Use voice input");
+  voiceButton.title = listening ? "Stop listening" : "Speak your question";
+}
+
+function getSpeechErrorMessage(error) {
+  const messages = {
+    "not-allowed": "Microphone access was denied. Allow microphone access in your browser, then try again.",
+    "service-not-allowed": "The browser did not allow speech recognition. You can type your question instead.",
+    "no-speech": "No speech was detected. Tap the microphone and try again.",
+    "audio-capture": "No microphone was found. Check your microphone or type your question.",
+    network: "This browser needs a network connection for speech recognition.",
+  };
+  return messages[error] || "Voice input failed. Please try again or type your question.";
+}
 
 // Uses the agreed contract: { question } -> { answer, sources }.
 async function getReply(question) {

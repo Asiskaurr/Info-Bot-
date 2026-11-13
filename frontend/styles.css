@@ -51,6 +51,12 @@ body {
   font-weight: 800;
   letter-spacing: .04em;
 }
+.brand-mark svg { width: 36px; height: 36px; fill: none; stroke: #fff; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2.5; }
+.brand-mark .bot-head { fill: #17365f; stroke: #fff; }
+.brand-mark .bot-face { fill: #fff; stroke: none; }
+.brand-mark .bot-antenna-tip, .brand-mark .bot-eye { fill: #17365f; stroke: none; }
+.brand-mark .bot-ear, .brand-mark .bot-antenna, .brand-mark .bot-neck { stroke: #fff; }
+.brand-mark .bot-smile { stroke: #17365f; stroke-width: 2; }
 
 .chat-header h1 { margin: 0 0 3px; font-size: 21px; }
 .chat-header p { margin: 0; color: #d5e0f3; font-size: 13px; }
@@ -106,10 +112,15 @@ body {
 }
 
 .composer {
-  display: flex;
-  gap: 10px;
   padding: 18px 22px 10px;
   border-top: 1px solid #e7ebf2;
+}
+
+.composer-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
 }
 
 .composer input {
@@ -137,7 +148,32 @@ body {
 .composer button:focus-visible { outline: 3px solid #89b6ed; outline-offset: 2px; }
 .composer input:disabled { color: #77849a; background: #f5f7fa; }
 .composer button:disabled { background: #8293aa; cursor: wait; }
-.prototype-note { margin: 0; padding: 0 22px 15px; color: #77849a; text-align: center; font-size: 11px; }
+.voice-input-button {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  display: grid;
+  place-items: center;
+  padding: 0 !important;
+  border: 1px solid #cbd5e3 !important;
+  color: #1d4f91 !important;
+  background: #f7f9fc !important;
+}
+.voice-input-button:hover { background: #eaf0f8 !important; }
+.voice-input-button svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
+.voice-input-button.is-listening { color: #fff !important; background: #b63737 !important; border-color: #b63737 !important; }
+.voice-input-button.is-listening:hover { background: #982c2c !important; }
+.voice-input-button:disabled { color: #8293aa !important; background: #edf0f4 !important; cursor: not-allowed; }
+.send-button {
+  width: 54px;
+  height: 46px;
+  display: grid;
+  flex: 0 0 54px;
+  place-items: center;
+  padding: 0 !important;
+}
+.send-button svg { width: 22px; height: 22px; fill: currentColor; }
+.voice-status { min-height: 14px; margin: 5px 0 0; color: #64728a; font-size: 11px; line-height: 1.3; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 
 @media (max-width: 520px) {
