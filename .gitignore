@@ -1,17 +1,37 @@
 # Python
 __pycache__/
 *.py[cod]
+*.pyo
 venv/
 .venv/
 
 # Environment variables and secrets
 .env
+.env.*
+!.env.example
 
-# Database and vector storage
-*.db
+# Generated data and datasets
+data/
+*.pdf
+*.jsonl
+
+# Vector databases
 chroma_store/
+chroma_db/
+*.db
+*.sqlite
+*.sqlite3
 
 # IDE and system files
 .vscode/
+.idea/
 .DS_Store
 Thumbs.db
+*.log
+
+# Python build files
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+build/
+dist/
